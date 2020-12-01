@@ -7,6 +7,8 @@ export interface AxiosRequestConfig {
 	data?: any
 	params?: any
 	headers?: any
+	responseType?: XMLHttpRequestResponseType // lib.dom.d.ts 自定义字面量类型
+	timeout?: number
 }
 
 export type Method = 'get' | 'GET'
@@ -16,3 +18,23 @@ export type Method = 'get' | 'GET'
 	| 'post' | 'POST'
 	| 'put' | 'PUT'
 	| 'patch' | 'PATCH'
+
+// 响应数据接口类型
+export interface AxiosResponse {
+	data: any
+	status: number
+	statusText: string
+	headers: any // 响应头
+	config: AxiosRequestConfig
+	request: any
+}
+
+export interface AxiosPromise extends Promise<AxiosResponse> {}
+
+export interface AxiosError extends Error {
+	config: AxiosRequestConfig
+	code?: string
+	request?: any
+	response?: any
+	isAxiosError: boolean
+}

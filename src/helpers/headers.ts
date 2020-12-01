@@ -23,3 +23,24 @@ export function processHeaders(headers: any, data: any): any {
 
 	return headers
 }
+
+// 通过 `XMLHttpRequest` 对象的 `getAllResponseHeaders` 方法获取到的值是字符串
+// 每一行都是以回车符和换行符 `\r\n` 结束，它们是每个 `header` 属性的分隔符
+// 解析 headers 工具函数
+export function parseHeaders(headers: string): any {
+	let parsed = Object.create(null)
+	if (!headers) return parsed
+
+	headers.split('\r\n').forEach(line => {
+		let [key, val] = line.split(':')
+		key = key.trim().toLowerCase()
+		if (!key) return
+
+		if (val) {
+			val = val.trim()
+		}
+		parsed[key] = val
+	})
+
+	return parsed
+}
