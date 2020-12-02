@@ -1,13 +1,26 @@
-import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from "./types"
-import { parseHeaders } from "./helpers/headers";
-import { createError } from "./helpers/error";
+import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from "../types"
+import { parseHeaders } from "../helpers/headers";
+import { createError } from "../helpers/error";
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 	return new Promise((resolve, reject) => {
 		const { data = null, url, method = 'get', headers, responseType, timeout } = config
+
+		/**
+		 * @instance request prop
+		 * @name request.status 初始为 0
+		 * @name request.readyState 初始为 0
+		 * @name request.timeout 初始为 0
+		 * @name request.response 初始为 ""
+		 * @name request.responseText 初始为 ""
+		 * @name request.responseType 初始为 ""
+		 * @name request.statusText 初始为 ""
+		 * @name request.onreadystatechange 初始为 null
+		 * @name ...
+		 */
 		const request = new XMLHttpRequest()
 
-		if (responseType) { 
+		if (responseType) {
 			request.responseType = responseType
 		}
 
@@ -15,7 +28,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 			request.timeout = timeout
 		}
 
-		// 方法初始化一个请求, 第三个参数为 boolean，表示是否异步执行操作，默认为 true, 在send（）方法发送请求后会立即返回
+		// open()方法初始化一个请求, 第三个参数为 boolean，表示是否异步执行操作，默认为 true, 在send（）方法发送请求后会立即返回
 		// 如果 async = false, send() 方法直到收到答复前不会返回
 		// 如果multipart属性为true则这个必须为true，否则将引发异常。
 		request.open(method.toUpperCase(), url, true)
@@ -30,12 +43,16 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 			 */
 			if (request.readyState !== 4) return
 			
-			// 当发生网络错误或者超时错误时，status = 0
+			// 当发生网络错误或者超时错误时，status 也是 0
 			if (request.status === 0) return
 
 			// 返回所有的响应头，以 CRLF 分割的字符串，或者 null 如果没有收到任何响应
+			// 通过 parseHeaders 将 getAllResponseHeaders 获取到的响应头转化为 json 形式
 			const responseHeaders = parseHeaders(request.getAllResponseHeaders())
+
 			const responseData = responseType && responseType !== 'text' ? request.response : request.responseText
+			
+			// 将 response 封装成 AxiosResponse 类型
 			const response: AxiosResponse = {
 				data: responseData,
 				status: request.status,
@@ -54,24 +71,19 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 			reject(createError('Network error', config, null, request))
 		}
 
-		// 超时
+		// 超时处理
 		request.ontimeout = function handleTimeout() {
 			reject(createError(`Timeout of ${timeout} ms exceeded`, config, 'timeout', request))
 		}
 
+		// 当我们传入的 `data` 为空的时候，请求 `header` 配置 `Content-Type` 是没有意义的，于是我们把它删除。
+		// 设置请求头部的方法，必须在 open 和 send 方法之间调用
 		Object.keys(headers).forEach(name => {
 			if (data === null && name.toLowerCase() === 'content-type') {
-				// 当我们传入的 `data` 为空的时候，请求 `header` 配置 `Content-Type` 是没有意义的，于是我们把它删除。
 				delete headers[name]
 			} else {
-				// 设置请求头部的方法，必须在 open 和 send 方法之间调用
 				// 如果多次对同一个请求头赋值，只会生成一个合并了多个值的请求头
-				if (data === null && name.toLowerCase() === 'content-type') {
-					// 如果 data 不存在，设置 Content-Type 就没有必要
-					delete headers[name]
-				} else {
-					request.setRequestHeader(name, headers[name])
-				}
+				request.setRequestHeader(name, headers[name])
 			}
 		})
 
