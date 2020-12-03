@@ -19,6 +19,7 @@ function createInstance(): AxiosInstance {
   return instance as AxiosInstance
 }
 
+// 我们拿到的其实就是 request 混合方法
 const axios = createInstance()
 
 export default axios

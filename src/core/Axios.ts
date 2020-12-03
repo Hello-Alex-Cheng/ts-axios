@@ -22,8 +22,20 @@ export default class Axios {
 		)
 	}
 	
-	request(config: AxiosRequestConfig): AxiosPromise {
-		return dispatchRequest(config)
+	request(url: any, config?: AxiosRequestConfig): AxiosPromise {
+		if (typeof url === 'string') {
+			if (!config) {
+				config = {}
+			}
+			config.url = url
+		} else {
+			// 如果url不是 string 类型，说明第一个参数可能就是 config
+			// config = url 表示忽略第一个参数后面的所有参数
+			config = url
+		}
+
+		// config! 表示 config 一定存在，消除报错
+		return dispatchRequest(config!)
 	}
 
 	get(url: string, config?: AxiosRequestConfig): AxiosPromise {
