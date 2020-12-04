@@ -18,6 +18,7 @@ export function isPlainObject(val: any): val is Object {
 // 交叉类型，定义两个泛型 T & U
 // 将 from 的属性都拷贝到 to 上
 export function extend<T, U>(to: T, from: U): T & U {
+	// for in 遍历对象除 Symbol 可枚举属性（包括原型属性）
 	for (const key in from) {
 		// 最终返回的 to 是 T & U 类型，所以这里需要将 to 断言成 T & U
 		// 表达式开始是括号的情况加个 ;

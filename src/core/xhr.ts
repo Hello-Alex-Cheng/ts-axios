@@ -31,7 +31,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 		// open()方法初始化一个请求, 第三个参数为 boolean，表示是否异步执行操作，默认为 true, 在send（）方法发送请求后会立即返回
 		// 如果 async = false, send() 方法直到收到答复前不会返回
 		// 如果multipart属性为true则这个必须为true，否则将引发异常。
-		request.open(method.toUpperCase(), url, true)
+		request.open(method.toUpperCase(), url as string, true)
 
 		request.onreadystatechange = function handleLoad() {
 			/**

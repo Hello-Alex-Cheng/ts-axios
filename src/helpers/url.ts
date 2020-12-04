@@ -12,6 +12,7 @@ function encode (val: string): string {
 }
 
 export function bulidURL (url: string, params?: any) {
+  // params 没有的话，就不需要拼接参数了，直接返回请求 url
   if (!params) {
     return url
   }

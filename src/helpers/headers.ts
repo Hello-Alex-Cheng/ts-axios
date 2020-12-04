@@ -12,6 +12,8 @@ function normalizeHeaderName(headers: any, normalizedName: string): void {
 }
 
 export function processHeaders(headers: any, data: any): any {
+	// 1. normalizeHeader：将请求头字段规范化，防止用户输入没区分大小写这种
+  // 2. 如果请求体是普通对象，并且没有传入headers.Content-Type,还需要默认加上 Content-Type
 	normalizeHeaderName(headers, 'Content-Type')
 
 	if (isPlainObject(data)) {
@@ -28,6 +30,7 @@ export function processHeaders(headers: any, data: any): any {
 // 每一行都是以回车符和换行符 `\r\n` 结束，它们是每个 `header` 属性的分隔符
 // 解析 headers 工具函数
 export function parseHeaders(headers: string): any {
+	// Object.create(null) 创建出一个纯净的对象，不含有 Prototype Object
 	let parsed = Object.create(null)
 	if (!headers) return parsed
 
