@@ -6,7 +6,8 @@ interface Interceptor<T> {
 }
 
 export default class InterceptorManager<T> {
-	// 保存 resolve 和 reject 回调函数
+	// interceptors 数组结构，保存含有 resolve 和 reject 属性的对象
+	// 同时可以含有 null，是因为 eject 方法可以删除拦截器，
 	private interceptors: Array<Interceptor<T> | null>
 
 	constructor() {
@@ -16,8 +17,11 @@ export default class InterceptorManager<T> {
   //   return config;
   // }, function (error) {
   //   return Promise.reject(error)
-  // })
+	// })
+	// 调用 请求 截器调用 use 方法，会收集所有的请求拦截器中的回调函数
+	// 调用 响应拦 截器调用 use 方法，会收集所有的响应拦截器中的回调函数
 	use(resolved: RejectedFn<T>, rejected?: RejectedFn): number {
+		console.log('use count')
 		this.interceptors.push({
 			resolved,
 			rejected
@@ -30,6 +34,7 @@ export default class InterceptorManager<T> {
 		return this.interceptors.length - 1
 	}
 
+	// 拦截器内部使用,执行拦截器里面的方法
 	forEach(fn: (interceptor: Interceptor<T>) => void): void {
 		this.interceptors.forEach(interceptor => {
 			if (interceptor !== null) {
@@ -40,9 +45,9 @@ export default class InterceptorManager<T> {
 
 	// 取消拦截器
 	eject(id: number): void {
-		let interceptor = this.interceptors[id]
-		if (interceptor) {
-			interceptor = null
+		// 不能通过 splice 这种方法去删除，会改变数组长度，导致数组下标发生变化就乱了
+		if (this.interceptors[id]) {
+			this.interceptors[id] = null
 		}
 	}
 }

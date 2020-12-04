@@ -64,5 +64,10 @@ module.exports = function(router) {
 	})	
 	router.patch('/extend/patch', function(req, res) {
 		res.json(req.body)
-	})	
+	})
+
+	// 拦截器部分
+	router.get('/interceptor/get', (req, res) => {
+		res.end('hello result')
+	})
 }

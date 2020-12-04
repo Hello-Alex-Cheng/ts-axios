@@ -1,74 +1,43 @@
 import axios from '../../src/index'
 
-// axios({
-//   method: 'get',
-//   url: '/extend/get',
-//   params: {
-//     a: 1,
-//     b: 2
-//   }
-// })
-// axios.request({
-//   method: 'get',
-//   url: '/extend/get',
-//   params: {
-//     a: 'request'
-//   }
-// })
+axios.interceptors.request.use(config => {
+  config.headers.test += '1'
+  return config
+})
+axios.interceptors.request.use(config => {
+  config.headers.test += '2'
+  return config
+})
+axios.interceptors.request.use(config => {
+  config.headers.test += '3'
+  return config
+})
 
-// axios.get('/extend/get')
-// axios.options('/extend/options')
-// axios.head('/extend/head')
-// axios.delete('/extend/delete')
+axios.interceptors.response.use(res => {
+  res.data += '1'
+  return res
+})
+const secondResInterceptor = axios.interceptors.response.use(res => {
+  res.data += '2'
+  return res
+})
+axios.interceptors.response.use(res => {
+  res.data += '3'
+  return res
+})
 
-// axios.post('/extend/post', { msg: 'poost' })
-// axios.put('/extend/put', { msg: 'put' })
-
-// axios({
-//   method: 'get',
-//   url: '/extend/get',
-//   params: {
-//     a: 1,
-//     b: 2
-//   }
-// })
-
-// 支持第一个参数为 url
-// axios('/extend/post', {
-//   method: 'post',
-//   data: {
-//     msg: 'axios(url, config) request'
-//   }
-// })
+// 删除拦截器
+axios.interceptors.response.eject(secondResInterceptor)
 
 
-interface ResponseData<T = any> {
-	code: number
-	// @type { T }
-	result: T
-	message: string
-}
 
-interface User {
-  name: string
-  age: number
-}
 
-function getUser<T>() {
-  return axios<ResponseData<T>>('/extend/post', {
-    method: 'post',
-    data: {
-      msg: 'axios(url, config) request'
-    }
-  })
-}
-
-async function test() {
-  const user = await getUser<User>()
-  if (user) {
-    console.log('打印user:', user)
+axios({
+  url: '/interceptor/get',
+  method: 'get',
+  headers: {
+    test: ''
   }
-}
-
-test()
-
+}).then((res) => {
+  console.log('结果? ', res)
+})

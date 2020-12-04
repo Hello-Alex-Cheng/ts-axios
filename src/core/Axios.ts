@@ -10,12 +10,16 @@ import dispatchRequest from "./dispatchRequest"
 import InterceptorManager from './interceptors'
 
 interface Interceptors {
+	// 请求拦截器处理 config，专门收集请求拦截器的回调函数
 	request: InterceptorManager<AxiosRequestConfig>
+
+	// 响应拦截器处理 response，专门处理响应拦截器的回调函数
 	response: InterceptorManager<AxiosResponse>
 }
 
-interface PromiseChain {
-	resolved: ResolvedFn | ((config: AxiosRequestConfig) => AxiosPromise)
+// 链式调用 (chain) 的元素类型
+interface PromiseChain<T> {
+	resolved: ResolvedFn<T> | ((config: AxiosRequestConfig) => AxiosPromise)
 	rejected?: RejectedFn
 }
 
@@ -23,6 +27,7 @@ export default class Axios {
 	interceptors: Interceptors
 
 	constructor() {
+		// 这样就可以通过 axios.interceptors.request.use 调用拦截器了
 		this.interceptors = {
 			request: new InterceptorManager<AxiosRequestConfig>(),
 			response: new InterceptorManager<AxiosResponse>()
@@ -41,17 +46,21 @@ export default class Axios {
 			config = url
 		}
 
-		// 配置拦截器
-		const chain: PromiseChain[] = [{
+		// 链式调用 chain，可能用户配置多个 request 拦截器或者多个 response 拦截器。初始值如下
+		const chain: PromiseChain<any>[] = [{
 			resolved: dispatchRequest,
 			rejected: undefined
 		}]
 
+		// 这里调用 拦截器构造函数 中的 forEahc 函数，将收集到的回调函数一一放进链式数组中
 		this.interceptors.request.forEach(interceptor => {
 			// unshift() 将一个或多个元素添加到数组的开头，返回数组的长度（修改原数组）
+			// 添加在开头，是因为请求拦截器要先执行，并且后添加的拦截器需要先执行
 			chain.unshift(interceptor)
 		})
+
 		this.interceptors.response.forEach(interceptor => {
+			// 响应拦截器就是处理 response，按顺序执行回调函数
 			chain.push(interceptor)
 		})
 
