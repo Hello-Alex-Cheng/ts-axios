@@ -8,6 +8,7 @@ import {
 } from '../types'
 import dispatchRequest from "./dispatchRequest"
 import InterceptorManager from './interceptors'
+import mergeConfig from './mergeConfig'
 
 interface Interceptors {
 	// 请求拦截器处理 config，专门收集请求拦截器的回调函数
@@ -24,9 +25,12 @@ interface PromiseChain<T> {
 }
 
 export default class Axios {
+	defaults: AxiosRequestConfig
 	interceptors: Interceptors
 
-	constructor() {
+	constructor(initConfig: AxiosRequestConfig) {
+		this.defaults = initConfig
+
 		// 这样就可以通过 axios.interceptors.request.use 调用拦截器了
 		this.interceptors = {
 			request: new InterceptorManager<AxiosRequestConfig>(),
@@ -45,6 +49,9 @@ export default class Axios {
 			// config = url 表示忽略第一个参数后面的所有参数
 			config = url
 		}
+
+		// 合并配置
+		config = mergeConfig(this.defaults, config)
 
 		// 链式调用 chain，可能用户配置多个 request 拦截器或者多个 response 拦截器。初始值如下
 		const chain: PromiseChain<any>[] = [{

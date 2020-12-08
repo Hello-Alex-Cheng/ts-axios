@@ -78,6 +78,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
 		// 当我们传入的 `data` 为空的时候，请求 `header` 配置 `Content-Type` 是没有意义的，于是我们把它删除。
 		// 设置请求头部的方法，必须在 open 和 send 方法之间调用
+		console.log('headers ', headers)
 		Object.keys(headers).forEach(name => {
 			if (data === null && name.toLowerCase() === 'content-type') {
 				delete headers[name]

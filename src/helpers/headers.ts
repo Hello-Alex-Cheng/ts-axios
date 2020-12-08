@@ -1,4 +1,5 @@
-import { isPlainObject } from "./util"
+import { isPlainObject, deepMerge } from "./util"
+import { Method } from '../types'
 
 function normalizeHeaderName(headers: any, normalizedName: string): void {
 	if (!headers) return
@@ -46,4 +47,30 @@ export function parseHeaders(headers: string): any {
 	})
 
 	return parsed
+}
+
+// 合并配置时，如果设置了 headers，就用这个方法来合并 headers
+// headers: {
+//   common: {
+//     Accept: 'application/json, text/plain, */*'
+//   },
+//   post: {
+//     'Content-Type':'application/x-www-form-urlencoded'
+//   }
+// }
+export function flattenHeaders(headers: any, method: Method): any {
+	if (!headers) {
+		return headers
+	}
+
+	// 深拷贝请求头中的配置
+	headers = deepMerge(headers.common || {}, headers[method] || {}, headers)
+
+	// 这个方法表示，在这些特定的方式中，添加指定的请求头
+	const methodsToDelete = ['delete', 'get', 'head', 'options', 'post', 'put', 'patch', 'common']
+	methodsToDelete.forEach(method => {
+		delete headers[method]
+	})
+
+	return headers
 }

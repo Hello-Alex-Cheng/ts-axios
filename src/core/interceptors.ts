@@ -21,7 +21,6 @@ export default class InterceptorManager<T> {
 	// 调用 请求 截器调用 use 方法，会收集所有的请求拦截器中的回调函数
 	// 调用 响应拦 截器调用 use 方法，会收集所有的响应拦截器中的回调函数
 	use(resolved: RejectedFn<T>, rejected?: RejectedFn): number {
-		console.log('use count')
 		this.interceptors.push({
 			resolved,
 			rejected

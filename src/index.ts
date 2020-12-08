@@ -1,13 +1,15 @@
-import { AxiosInstance } from "./types"
+import { AxiosInstance, AxiosRequestConfig } from "./types"
 
 import Axios from "./core/Axios"
 
-import { extend } from "./helpers/util";
+import { extend } from "./helpers/util"
 
-function createInstance(): AxiosInstance {
+import defaults from './defaults'
+
+function createInstance(config: AxiosRequestConfig): AxiosInstance {
   // Axios 原型上最核心的方法就是 request 方法
   // 其它比如 get/post/delete 等等这些方法体内都是调用了 request 方法
-  const context = new Axios()
+  const context = new Axios(config)
 
   // 由于 request 内部使用到了 this, 所以需要将这个 this 指向绑定到 Axios 实例上，确保调用时不会出现异常
   // bind() 方法创建一个新的函数，在 bind() 被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
@@ -23,6 +25,6 @@ function createInstance(): AxiosInstance {
 }
 
 // 我们拿到的其实就是 request 混合方法
-const axios = createInstance()
+const axios = createInstance(defaults)
 
 export default axios

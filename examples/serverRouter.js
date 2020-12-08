@@ -17,7 +17,7 @@ module.exports = function(router) {
 				msg.push(chunk)
 			}
 		})
-	
+
 		req.on('end', () => {
 			let buf = Buffer.concat(msg)
 			res.json(buf.toJSON())
@@ -27,7 +27,7 @@ module.exports = function(router) {
 	router.get('/error/get', (req, res) => {
 		if (Math.random() > 0.5) {
 			res.json({
-				msg: `运气好，请求成功hello world`
+				msg: `请求成功hello world`
 			})
 		} else {
 			res.status(500)
@@ -69,5 +69,10 @@ module.exports = function(router) {
 	// 拦截器部分
 	router.get('/interceptor/get', (req, res) => {
 		res.end('hello result')
+	})
+
+	// 配置
+	router.post('/config/post', (req, res) => {
+		res.json(req.body)
 	})
 }

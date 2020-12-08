@@ -1,7 +1,7 @@
 // 入口文件
 import xhr from "./xhr";
 import { bulidURL } from "../helpers/url";
-import { processHeaders } from "../helpers/headers";
+import { processHeaders, flattenHeaders } from "../helpers/headers";
 import { transformRequest, transformResponse } from "../helpers/data";
 import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from "../types"
 
@@ -27,6 +27,11 @@ function processConfig (config: AxiosRequestConfig): void {
 
   // 对请求体做处理，如果data是普通对象，就将其转为json字符串类型
   config.data = transformRequestData(config)
+
+  // 合并请求头
+  config.headers = flattenHeaders(config.headers, config.method!)
+
+  console.log('config.headers', config.headers)
 }
 
 function transformRequestData(config: AxiosRequestConfig): any {

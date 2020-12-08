@@ -7,8 +7,25 @@ export interface AxiosRequestConfig {
 	data?: any
 	params?: any
 	headers?: any
-	responseType?: XMLHttpRequestResponseType // lib.dom.d.ts 自定义字面量类型
+
+	// lib.dom.d.ts 自定义字面量类型
+	responseType?: XMLHttpRequestResponseType
+
 	timeout?: number
+
+	// transformRequest：允许在向服务器发送前，修改请求数据
+	// 只能用在 'PUT', 'POST' 和 'PATCH' 这几个请求方法
+	// 后面数组中的函数必须返回一个字符串，或 ArrayBuffer，或 Stream
+	transformRequest?: AxiosTransformer | AxiosTransformer[]
+
+	// `transformResponse` 在传递给 then/catch 前，允许修改响应数据
+	transformResponse?: AxiosTransformer | AxiosTransformer[]
+
+	[propName: string]: any // 添加这个属性，主要是为了合并配置那里使用的
+}
+
+export interface AxiosTransformer {
+	(data: any, headers?: any): any
 }
 
 export type Method = 'get' | 'GET'
