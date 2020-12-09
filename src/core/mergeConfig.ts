@@ -12,7 +12,6 @@ export default function mergeConfig (config1: AxiosRequestConfig, config2?: Axio
 	if (!config2) {
 		config2 = {}
 	}
-	console.log(config1, config2)
 
 	const config = Object.create(null)
 	
@@ -50,19 +49,18 @@ export default function mergeConfig (config1: AxiosRequestConfig, config2?: Axio
 		// warning: [ts] 对象可能为“未定义”。config2![key] 表示我们这 config2 对象肯定存在
 		config[key] = strat(config1[key], config2![key])
 	}
-
 	return config
 }
 
 function fromVal2Strat(val1: any, val2: any): any {
-	if (typeof val2 !== undefined) return val2
+	if (typeof val2 !== 'undefined') return val2
 }
 
 /**
  * @function 默认合并策略，优先取`config2`中的值，因为`config2`是用户自定义的配置
  */
 function defaultStrate (val1: any, val2: any): any {
-	return typeof val2 !== undefined ? val2 : val1
+	return typeof val2 !== 'undefined' ? val2 : val1
 }
 
 const stratKeysDeepMerge = ['headers']
@@ -78,11 +76,11 @@ function deepMergeStrat (val1: any, val2: any): any {
 	if (isPlainObject(val2)) {
 		// 深拷贝
 		return deepMerge(val1, val2)
-	} else if (typeof val2 !== undefined) {
+	} else if (typeof val2 !== 'undefined') {
 		return val2
 	} else if (isPlainObject(val1)) {
 		return deepMerge(val1)
-	} else if (typeof val1 !== undefined) {
+	} else if (typeof val1 !== 'undefined') {
 		return val1
 	}
 }
