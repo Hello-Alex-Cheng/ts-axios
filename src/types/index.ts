@@ -96,3 +96,9 @@ export interface ResolvedFn<T = any> {
 export interface RejectedFn<T = any> {
 	(error: any): any
 }
+
+// 添加静态方法
+// create 函数接受一个 `AxiosRequestConfig` 类型配置，作为默认配置的扩展，也可以不传
+export interface AxiosStatic extends AxiosInstance {
+	create(config?: AxiosRequestConfig): AxiosInstance
+}

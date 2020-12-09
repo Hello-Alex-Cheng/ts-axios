@@ -1,12 +1,13 @@
-import { AxiosInstance, AxiosRequestConfig } from "./types"
+import { AxiosInstance, AxiosRequestConfig, AxiosStatic } from "./types"
 
 import Axios from "./core/Axios"
 
 import { extend } from "./helpers/util"
-
 import defaults from './defaults'
+import mergeConfig from './core/mergeConfig'
 
-function createInstance(config: AxiosRequestConfig): AxiosInstance {
+// AxiosStatic 接口继承自 `AxiosInstance`
+function createInstance(config: AxiosRequestConfig): AxiosStatic {
   // Axios 原型上最核心的方法就是 request 方法
   // 其它比如 get/post/delete 等等这些方法体内都是调用了 request 方法
   const context = new Axios(config)
@@ -21,10 +22,15 @@ function createInstance(config: AxiosRequestConfig): AxiosInstance {
   extend(instance, context)
   
   // 当ts无法正确推断出instance 的类型时，通过类型断言来处理
-  return instance as AxiosInstance
+  return instance as AxiosStatic
 }
 
 // 我们拿到的其实就是 request 混合方法
 const axios = createInstance(defaults)
+
+// 提供对外的 create 静态方法，
+axios.create = function create(config) {
+  return createInstance(mergeConfig(defaults, config))
+}
 
 export default axios

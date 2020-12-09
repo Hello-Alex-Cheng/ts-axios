@@ -15,6 +15,7 @@ import qs from 'qs'
 //   console.log('config res', res)
 // })
 
+// 测试 transformRequest 和 transformResponse 属性作用
 axios({
   transformRequest: [
     function(data, headers) {
@@ -41,4 +42,36 @@ axios({
   }
 }).then(res => {
   console.log('config res: ', res)
+})
+
+// 测试 create 方法
+const instance = axios.create({
+  transformRequest: [
+    function(data, headers) {
+      headers.auth = 'hello create function'
+      return qs.stringify(data)
+    },
+    ...(axios.defaults.transformRequest)
+  ],
+  transformResponse: [
+    ...(axios.defaults.transformResponse),
+    function(data) {
+      // you can process response datas at here
+      if (typeof data === 'object') {
+        data.b = 'create function data'
+        data.a += 1
+      }
+      return data
+    }
+  ]
+})
+
+instance({
+  url: '/config/post',
+  method: 'post',
+  data: {
+    a: 1
+  }
+}).then(res => {
+  console.log('create funciton res: ', res)
 })
